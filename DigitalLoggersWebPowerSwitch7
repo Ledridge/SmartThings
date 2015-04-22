@@ -2,7 +2,6 @@
  *  Web Power Switch 7
  */
  
-import groovy.json.JsonSlurper
 import com.google.common.base.Splitter;
 import java.util.List;
 import java.util.Map;
@@ -23,53 +22,150 @@ preferences {
         input("port6name", "string", title:"Port6 Name", description: "Name for port", defaultValue: "Port 6" , required: true, displayDuringSetup: true)
         input("port7name", "string", title:"Port7 Name", description: "Name for port", defaultValue: "Port 7" , required: true, displayDuringSetup: true)
         input("port8name", "string", title:"Port8 Name", description: "Name for port", defaultValue: "Port 8" , required: true, displayDuringSetup: true)
-}
+		}
 
 metadata {
 	definition (name: "Web Power Switch", namespace: "Ledridge", author: "Ledridge") {
-		capability "Polling"
-		capability "Refresh"
+    
+	capability "Polling"
+	capability "Refresh"
         capability "Switch"
         
-        attribute "Port1", "string"
-        attribute "Port2", "string"
-        attribute "Port3", "string"
-        attribute "Port4", "string"
-        attribute "Port5", "string"
-        attribute "Port6", "string"
-        attribute "Port7", "string"
-        attribute "Port8", "string"
+        command "OA1ON" 
+        command "OA1OFF"
+        command "OA1CCL"
+
+        command "OA2ON" 
+        command "OA2OFF"
+        command "OA2CCL"
+
+        command "OA3ON" 
+        command "OA3OFF"
+        command "OA3CCL"
+
+        command "OA4ON" 
+        command "OA4OFF"
+        command "OA4CCL"
+
+        command "OA5ON" 
+        command "OA5OFF"
+        command "OA5CCL"
+
+        command "OA6ON" 
+        command "OA6OFF"
+        command "OA6CCL"
+
+        command "OA7ON" 
+        command "OA7OFF"
+        command "OA7CCL"
+
+        command "OA8ON" 
+        command "OA8OFF"
+        command "OA8CCL"
         
-        command "on1"
-        command "off1"
-        command "cycle1"
-	}
+        command "OutletAction", ["number", "string"]
+		}
 
 	simulator {
 		// TODO: define status and reply messages here
-	}
+		}
 
 	tiles {
     
-    	standardTile("Label1", "device.Label1", width: 1, height: 1, canChangeIcon: true , decoration: "flat") {
-        	state "default", label: '$port1name', displayName: '$port1name'
-        }
-        standardTile("Port1", "device.Port1", width: 1, height: 1) {
-			state "off", action:"on1" , label: "Off", backgroundColor: "#ffffff", nextState: "on"
-			state "on" , action:"off1", label: "On" , backgroundColor: "#79b821", nextState: "off"
-		}
+    	valueTile("Label1", "device.Label1", decoration: "flat") {state "default", label:'${currentValue}'}
+        standardTile("Outlet1", "device.Outlet1", width: 1, height: 1) {
+            state "off", action: "OA1ON", label: 'Off', backgroundColor: "#ffffff", nextState: "on"
+            state "on" , action: "OA1OFF", label: 'On', backgroundColor: "#79b821", nextState: "off"
+            }
         standardTile("Cycle1", "device.Cycle1", width: 1, height: 1) {
-			state "default", action:"cycle1", icon: "st.secondary.refresh"
-		}
-    
+            state "off", action: "OA1CCL", label: 'Off', backgroundColor: "#ffffff", nextState: "on", icon: "st.secondary.refresh"
+            state "on" , label: 'On', backgroundColor: "#79b821", nextState: "off", icon: "st.secondary.refresh"
+            }
 
-    
+    	valueTile("Label2", "device.Label2", decoration: "flat") {state "default", label:'${currentValue}'}
+        standardTile("Outlet2", "device.Outlet2", width: 1, height: 1) {
+            state "off", action: "OA2ON", label: 'Off', backgroundColor: "#ffffff", ne2tState: "on"
+            state "on" , action: "OA2OFF", label: 'On', backgroundColor: "#79b821", ne2tState: "off"
+            }
+        standardTile("Cycle2", "device.Cycle2", width: 1, height: 1) {
+            state "off", action: "OA2CCL", label: 'Off', backgroundColor: "#ffffff", ne2tState: "on", icon: "st.secondary.refresh"
+            state "on" , label: 'On', backgroundColor: "#79b821", ne2tState: "off", icon: "st.secondary.refresh"
+            }
+
+    	valueTile("Label3", "device.Label3", decoration: "flat") {state "default", label:'${currentValue}'}
+        standardTile("Outlet3", "device.Outlet3", width: 1, height: 1) {
+            state "off", action: "OA3ON", label: 'Off', backgroundColor: "#ffffff", ne3tState: "on"
+            state "on" , action: "OA3OFF", label: 'On', backgroundColor: "#79b821", ne3tState: "off"
+            }
+        standardTile("Cycle3", "device.Cycle3", width: 1, height: 1) {
+            state "off", action: "OA3CCL", label: 'Off', backgroundColor: "#ffffff", ne3tState: "on", icon: "st.secondary.refresh"
+            state "on" , label: 'On', backgroundColor: "#79b821", ne3tState: "off", icon: "st.secondary.refresh"
+            }
+
+        valueTile("Label4", "device.Label4", decoration: "flat") {state "default", label:'${currentValue}'}
+        standardTile("Outlet4", "device.Outlet4", width: 1, height: 1) {
+            state "off", action: "OA4ON", label: 'Off', backgroundColor: "#ffffff", ne4tState: "on"
+            state "on" , action: "OA4OFF", label: 'On', backgroundColor: "#79b821", ne4tState: "off"
+            }
+        standardTile("Cycle4", "device.Cycle4", width: 1, height: 1) {
+            state "off", action: "OA4CCL", label: 'Off', backgroundColor: "#ffffff", ne4tState: "on", icon: "st.secondary.refresh"
+            state "on" , label: 'On', backgroundColor: "#79b821", ne4tState: "off", icon: "st.secondary.refresh"
+            }
+
+        valueTile("Label5", "device.Label5", decoration: "flat") {state "default", label:'${currentValue}'}
+        standardTile("Outlet5", "device.Outlet5", width: 1, height: 1) {
+            state "off", action: "OA5ON", label: 'Off', backgroundColor: "#ffffff", ne5tState: "on"
+            state "on" , action: "OA5OFF", label: 'On', backgroundColor: "#79b821", ne5tState: "off"
+            }
+        standardTile("Cycle5", "device.Cycle5", width: 1, height: 1) {
+            state "off", action: "OA5CCL", label: 'Off', backgroundColor: "#ffffff", ne5tState: "on", icon: "st.secondary.refresh"
+            state "on" , label: 'On', backgroundColor: "#79b821", ne5tState: "off", icon: "st.secondary.refresh"
+            }
+
+        valueTile("Label6", "device.Label6", decoration: "flat") {state "default", label:'${currentValue}'}
+        standardTile("Outlet6", "device.Outlet6", width: 1, height: 1) {
+            state "off", action: "OA6ON", label: 'Off', backgroundColor: "#ffffff", ne6tState: "on"
+            state "on" , action: "OA6OFF", label: 'On', backgroundColor: "#79b821", ne6tState: "off"
+            }
+        standardTile("Cycle6", "device.Cycle6", width: 1, height: 1) {
+            state "off", action: "OA6CCL", label: 'Off', backgroundColor: "#ffffff", ne6tState: "on", icon: "st.secondary.refresh"
+            state "on" , label: 'On', backgroundColor: "#79b821", ne6tState: "off", icon: "st.secondary.refresh"
+            }
+
+        valueTile("Label7", "device.Label7", decoration: "flat") {state "default", label:'${currentValue}'}
+        standardTile("Outlet7", "device.Outlet7", width: 1, height: 1) {
+            state "off", action: "OA7ON", label: 'Off', backgroundColor: "#ffffff", ne7tState: "on"
+            state "on" , action: "OA7OFF", label: 'On', backgroundColor: "#79b821", ne7tState: "off"
+            }
+        standardTile("Cycle7", "device.Cycle7", width: 1, height: 1) {
+            state "off", action: "OA7CCL", label: 'Off', backgroundColor: "#ffffff", ne7tState: "on", icon: "st.secondary.refresh"
+            state "on" , label: 'On', backgroundColor: "#79b821", ne7tState: "off", icon: "st.secondary.refresh"
+            }
+
+        valueTile("Label8", "device.Label8", decoration: "flat") {state "default", label:'${currentValue}'}
+        standardTile("Outlet8", "device.Outlet8", width: 1, height: 1) {
+            state "off", action: "OA8ON", label: 'Off', backgroundColor: "#ffffff", ne8tState: "on"
+            state "on" , action: "OA8OFF", label: 'On', backgroundColor: "#79b821", ne8tState: "off"
+            }
+        standardTile("Cycle8", "device.Cycle8", width: 1, height: 1) {
+            state "off", action: "OA8CCL", label: 'Off', backgroundColor: "#ffffff", ne8tState: "on", icon: "st.secondary.refresh"
+            state "on" , label: 'On', backgroundColor: "#79b821", ne8tState: "off", icon: "st.secondary.refresh"
+            }
+        
         standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat") {
         	state "default", action:"refresh.refresh", icon: "st.secondary.refresh"
-        }
-        main "Port1"
-        details(["Label1", "Port1", "Cycle1", "refresh"])
-    }
+        	}
+    
+        main "Outlet1"
+        details([ "Label1", "Outlet1", "Cycle1"
+                    ,"Label2", "Outlet2", "Cycle2"
+                    ,"Label3", "Outlet3", "Cycle3"
+                    ,"Label4", "Outlet4", "Cycle4"
+                    ,"Label5", "Outlet5", "Cycle5"
+                    ,"Label6", "Outlet6", "Cycle6"
+                    ,"Label7", "Outlet7", "Cycle7"
+                    ,"Label8", "Outlet8", "Cycle8", "refresh"])
+    		}
 }
 
 // ------------------------------------------------------------------
@@ -83,46 +179,85 @@ def parse(String description) {
     //def body = new String(descMap["body"].decodeBase64())
     //log.debug "body: ${body}"
     
-    //def slurper = new JsonSlurper()
-    //def result = slurper.parseText(body)
-    
-    //log.debug "result: ${result}"
+    log.debug "Label1: ${port1name}"
+    sendEvent(name: "Label1", value: port1name)
+
+    log.debug "Label2: ${port2name}"
+    sendEvent(name: "Label2", value: port2name)
+
+    log.debug "Label3: ${port3name}"
+    sendEvent(name: "Label3", value: port3name)
+
+    log.debug "Label4: ${port4name}"
+    sendEvent(name: "Label4", value: port4name)
+
+    log.debug "Label5: ${port5name}"
+    sendEvent(name: "Label5", value: port5name)
+
+    log.debug "Label6: ${port6name}"
+    sendEvent(name: "Label6", value: port6name)
+
+    log.debug "Label7: ${port7name}"
+    sendEvent(name: "Label7", value: port7name)
+
+    log.debug "Label8: ${port8name}"
+    sendEvent(name: "Label8", value: port8name)
   
 }
 
 // handle commands
 def poll() {
 	log.debug "Executing 'poll'"
-    getRPiData()
+    getRemoteData()
 }
 
 def refresh() {
 	sendEvent(name: "switch", value: "off")
 	log.debug "Executing 'refresh'"
-    getRPiData()
+    getRemoteData()
 }
 
-def on1(){
-	log.debug "Send Port 1 ON"
-    def uri = "/outlet?5=ON"
+//COVERING METHODS SINCE TILE ACTIONS CANN NOT PASS PARAMETERS
+def OA1ON() {OutletAction(1,"ON")}
+def OA1OFF(){OutletAction(1,"OFF")}
+def OA1CCL(){OutletAction(1,"CCL")}
+
+def OA2ON() {OutletAction(2,"ON")}
+def OA2OFF(){OutletAction(2,"OFF")}
+def OA2CCL(){OutletAction(2,"CCL")}
+
+def OA3ON() {OutletAction(3,"ON")}
+def OA3OFF(){OutletAction(3,"OFF")}
+def OA3CCL(){OutletAction(3,"CCL")}
+
+def OA4ON() {OutletAction(4,"ON")}
+def OA4OFF(){OutletAction(4,"OFF")}
+def OA4CCL(){OutletAction(4,"CCL")}
+
+def OA5ON() {OutletAction(5,"ON")}
+def OA5OFF(){OutletAction(5,"OFF")}
+def OA5CCL(){OutletAction(5,"CCL")}
+
+def OA6ON() {OutletAction(6,"ON")}
+def OA6OFF(){OutletAction(6,"OFF")}
+def OA6CCL(){OutletAction(6,"CCL")}
+
+def OA7ON() {OutletAction(7,"ON")}
+def OA7OFF(){OutletAction(7,"OFF")}
+def OA7CCL(){OutletAction(7,"CCL")}
+
+def OA8ON() {OutletAction(8,"ON")}
+def OA8OFF(){OutletAction(8,"OFF")}
+def OA8CCL(){OutletAction(8,"CCL")}
+
+def OutletAction(outlet,action){
+	log.debug "Send Outlet ${outlet.toInteger().toString()} ${action}"
+    def uri = "/outlet?${outlet.toInteger().toString()}=${action}"
+    log.debug uri
     postAction(uri)
-}
+	}
 
-def off1(){
-	log.debug "Send Port 1 OFF"
-    def uri = "/outlet?5=OFF"
-    postAction(uri)
-}
-
-def cycle1(){
-	log.debug "Cycle Port 1"
-    def uri = "/outlet?5=CCL"
-    postAction(uri)
-}
-
-
-// Get CPU percentage reading
-private getRPiData() {
+private getRemoteData() {
 	def uri = "/status"
     postAction(uri)
 }
@@ -173,15 +308,6 @@ def toAscii(s){
                 asciiInt = Long.parseLong(ascString);
                 return asciiInt;
     }
-
-
-
-
-
-
-
-
-
 
 private encodeCredentials(username, password){
 	log.debug "Encoding credentials"

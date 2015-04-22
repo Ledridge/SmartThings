@@ -1,0 +1,228 @@
+/**
+ *  Web Power Switch 7
+ */
+ 
+import groovy.json.JsonSlurper
+import com.google.common.base.Splitter;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+
+preferences {
+        input("ip", "string", title:"IP Address", description: "192.168.1.3", defaultValue: "192.168.1.3" ,required: true, displayDuringSetup: true)
+        input("port", "string", title:"Port", description: "80", defaultValue: "80" , required: true, displayDuringSetup: true)
+        input("username", "string", title:"Username", description: "admin", defaultValue: "admin" , required: true, displayDuringSetup: true)
+        input("password", "password", title:"Password", description: "password", defaultValue: "password" , required: true, displayDuringSetup: true)
+        
+        input("port1name", "string", title:"Port1 Name", description: "Name for port", defaultValue: "Port 1" , required: true, displayDuringSetup: true)
+        input("port2name", "string", title:"Port2 Name", description: "Name for port", defaultValue: "Port 2" , required: true, displayDuringSetup: true)
+        input("port3name", "string", title:"Port3 Name", description: "Name for port", defaultValue: "Port 3" , required: true, displayDuringSetup: true)
+        input("port4name", "string", title:"Port4 Name", description: "Name for port", defaultValue: "Port 4" , required: true, displayDuringSetup: true)
+        input("port5name", "string", title:"Port5 Name", description: "Name for port", defaultValue: "Port 5" , required: true, displayDuringSetup: true)
+        input("port6name", "string", title:"Port6 Name", description: "Name for port", defaultValue: "Port 6" , required: true, displayDuringSetup: true)
+        input("port7name", "string", title:"Port7 Name", description: "Name for port", defaultValue: "Port 7" , required: true, displayDuringSetup: true)
+        input("port8name", "string", title:"Port8 Name", description: "Name for port", defaultValue: "Port 8" , required: true, displayDuringSetup: true)
+}
+
+metadata {
+	definition (name: "Web Power Switch", namespace: "Ledridge", author: "Ledridge") {
+		capability "Polling"
+		capability "Refresh"
+        capability "Switch"
+        
+        attribute "Port1", "string"
+        attribute "Port2", "string"
+        attribute "Port3", "string"
+        attribute "Port4", "string"
+        attribute "Port5", "string"
+        attribute "Port6", "string"
+        attribute "Port7", "string"
+        attribute "Port8", "string"
+        
+        command "on1"
+        command "off1"
+        command "cycle1"
+	}
+
+	simulator {
+		// TODO: define status and reply messages here
+	}
+
+	tiles {
+    
+    	standardTile("Label1", "device.Label1", width: 1, height: 1, canChangeIcon: true , decoration: "flat") {
+        	state "default", label: '$port1name', displayName: '$port1name'
+        }
+        standardTile("Port1", "device.Port1", width: 1, height: 1) {
+			state "off", action:"on1" , label: "Off", backgroundColor: "#ffffff", nextState: "on"
+			state "on" , action:"off1", label: "On" , backgroundColor: "#79b821", nextState: "off"
+		}
+        standardTile("Cycle1", "device.Cycle1", width: 1, height: 1) {
+			state "default", action:"cycle1", icon: "st.secondary.refresh"
+		}
+    
+
+    
+        standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat") {
+        	state "default", action:"refresh.refresh", icon: "st.secondary.refresh"
+        }
+        main "Port1"
+        details(["Label1", "Port1", "Cycle1", "refresh"])
+    }
+}
+
+// ------------------------------------------------------------------
+
+// parse events into attributes
+def parse(String description) {
+    def map = [:]
+    def descMap = parseDescriptionAsMap(description)
+    log.debug "descMap: ${descMap}"
+    
+    //def body = new String(descMap["body"].decodeBase64())
+    //log.debug "body: ${body}"
+    
+    //def slurper = new JsonSlurper()
+    //def result = slurper.parseText(body)
+    
+    //log.debug "result: ${result}"
+  
+}
+
+// handle commands
+def poll() {
+	log.debug "Executing 'poll'"
+    getRPiData()
+}
+
+def refresh() {
+	sendEvent(name: "switch", value: "off")
+	log.debug "Executing 'refresh'"
+    getRPiData()
+}
+
+def on1(){
+	log.debug "Send Port 1 ON"
+    def uri = "/outlet?5=ON"
+    postAction(uri)
+}
+
+def off1(){
+	log.debug "Send Port 1 OFF"
+    def uri = "/outlet?5=OFF"
+    postAction(uri)
+}
+
+def cycle1(){
+	log.debug "Cycle Port 1"
+    def uri = "/outlet?5=CCL"
+    postAction(uri)
+}
+
+
+// Get CPU percentage reading
+private getRPiData() {
+	def uri = "/status"
+    postAction(uri)
+}
+
+// ------------------------------------------------------------------
+
+private postAction(uri){
+  setDeviceNetworkId(ip,port)  
+  
+  def userpass = encodeCredentials(username, password)
+  //log.debug("userpass: " + userpass) 
+  
+  def headers = getHeader(userpass)
+  //log.debug("headders: " + headers) 
+  
+  def hubAction = new physicalgraph.device.HubAction(
+    method: "GET",
+    path: uri,
+    headers: headers
+  )
+  log.debug("Executing hubAction on " + getHostAddress())
+  log.debug hubAction
+  hubAction    
+}
+
+// ------------------------------------------------------------------
+// Helper methods
+// ------------------------------------------------------------------
+
+def parseDescriptionAsMap(description) {
+	description.split(",").inject([:]) { map, param ->
+		def nameAndValue = param.split(":")
+		map += [(nameAndValue[0].trim()):nameAndValue[1].trim()]
+	}
+}
+
+
+def toAscii(s){
+        StringBuilder sb = new StringBuilder();
+        String ascString = null;
+        long asciiInt;
+                for (int i = 0; i < s.length(); i++){
+                    sb.append((int)s.charAt(i));
+                    sb.append("|");
+                    char c = s.charAt(i);
+                }
+                ascString = sb.toString();
+                asciiInt = Long.parseLong(ascString);
+                return asciiInt;
+    }
+
+
+
+
+
+
+
+
+
+
+private encodeCredentials(username, password){
+	log.debug "Encoding credentials"
+	def userpassascii = "${username}:${password}"
+    def userpass = "Basic " + userpassascii.encodeAsBase64().toString()
+    //log.debug "ASCII credentials are ${userpassascii}"
+    //log.debug "Credentials are ${userpass}"
+    return userpass
+}
+
+private getHeader(userpass){
+	log.debug "Getting headers"
+    def headers = [:]
+    headers.put("HOST", getHostAddress())
+    headers.put("Authorization", userpass)
+    //log.debug "Headers are ${headers}"
+    return headers
+}
+
+private delayAction(long time) {
+	new physicalgraph.device.HubAction("delay $time")
+}
+
+private setDeviceNetworkId(ip,port){
+  	def iphex = convertIPtoHex(ip)
+  	def porthex = convertPortToHex(port)
+  	device.deviceNetworkId = "$iphex:$porthex"
+  	log.debug "Device Network Id set to ${iphex}:${porthex}"
+}
+
+private getHostAddress() {
+	return "${ip}:${port}"
+}
+
+private String convertIPtoHex(ipAddress) { 
+    String hex = ipAddress.tokenize( '.' ).collect {  String.format( '%02x', it.toInteger() ) }.join()
+    return hex
+
+}
+
+private String convertPortToHex(port) {
+	String hexport = port.toString().format( '%04x', port.toInteger() )
+    return hexport
+}

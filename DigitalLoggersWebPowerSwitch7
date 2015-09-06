@@ -27,8 +27,8 @@ preferences {
 metadata {
 	definition (name: "Web Power Switch", namespace: "Ledridge", author: "Ledridge") {
     
-	capability "Polling"
-	capability "Refresh"
+		capability "Polling"
+		capability "Refresh"
         capability "Switch"
         
         command "OA1ON" 
@@ -64,6 +64,8 @@ metadata {
         command "OA8CCL"
         
         command "OutletAction", ["number", "string"]
+        command "OutletStatus", ["number"]
+        command "OutletName", ["number"]
 		}
 
 	simulator {
@@ -174,33 +176,122 @@ metadata {
 def parse(String description) {
     def map = [:]
     def descMap = parseDescriptionAsMap(description)
-    log.debug "descMap: ${descMap}"
+    //log.debug "descMap: ${descMap}"
     
-    //def body = new String(descMap["body"].decodeBase64())
+    //log.debug description.decodeBase64().substring(50,10)
+    
+    def body = new String(descMap["body"].decodeBase64())
     //log.debug "body: ${body}"
+
+	def hexString = body.tokenize()
+	//log.debug "0: ${hexString[0]}"
+    //log.debug "1: ${hexString[1]}"
+    //log.debug "2: ${hexString[2]}"
+    //log.debug "3: ${hexString[3]}"
+    //log.debug "4: ${hexString[4]}"
+    //log.debug "5: ${hexString[5]}"
+    //log.debug "6: ${hexString[6]}"
+    //log.debug "7: ${hexString[7]}"
+    //log.debug "8: ${hexString[8]}"
     
-    log.debug "Label1: ${port1name}"
+    if (hexString[1].contains("status"))
+    {
+
+        def a = hexString[3].toString().replace('id="state">','');
+        //log.debug "a: ${a}"
+
+        char[] charArray = a.toCharArray();
+
+        //log.debug charArray[0];
+        //log.debug charArray[1];
+
+
+        def b = "${charArray[0]}${charArray[1]}"
+        //log.debug "b: ${b}"
+
+        def binaryString = hexToBin(b)
+        //log.debug "Binary String: ${binaryString}"
+
+        char[] StatusArray = binaryString.toString().toCharArray();
+
+        //log.debug StatusArray[0];
+        //log.debug StatusArray[1];
+        //log.debug StatusArray[2];
+        //log.debug StatusArray[3];
+        //log.debug StatusArray[4];
+        //log.debug StatusArray[5];
+        //log.debug StatusArray[6];
+        //log.debug StatusArray[7];
+        
+        def o5 = device.latestValue('o5')
+
+        if (StatusArray[7] == "0")
+            sendEvent(name: "Outlet1", value: "off")
+        else
+            sendEvent(name: "Outlet1", value: "on")
+
+        if (StatusArray[6] == "0")
+            sendEvent(name: "Outlet2", value: "off")
+        else
+            sendEvent(name: "Outlet2", value: "on")
+
+        if (StatusArray[5] == "0")
+            sendEvent(name: "Outlet3", value: "off")
+        else
+            sendEvent(name: "Outlet3", value: "on")
+
+        if (StatusArray[4] == "0")
+            sendEvent(name: "Outlet4", value: "off")
+        else
+            sendEvent(name: "Outlet4", value: "on")
+
+        if (StatusArray[3] == "0")
+            sendEvent(name: "Outlet5", value: "off")
+        else
+            sendEvent(name: "Outlet5", value: "on")
+            
+        if (StatusArray[2] == "0")
+            sendEvent(name: "Outlet6", value: "off")
+        else
+            sendEvent(name: "Outlet6", value: "on")
+
+        if (StatusArray[1] == "0")
+            sendEvent(name: "Outlet7", value: "off")
+        else
+            sendEvent(name: "Outlet7", value: "on")
+
+        if (StatusArray[0] == "0")
+            sendEvent(name: "Outlet8", value: "off")
+        else
+            sendEvent(name: "Outlet8", value: "on")
+
+	}
+    else
+        log.debug "not status"
+
+
+    //log.debug "Label1: ${port1name}"
     sendEvent(name: "Label1", value: port1name)
 
-    log.debug "Label2: ${port2name}"
+    //log.debug "Label2: ${port2name}"
     sendEvent(name: "Label2", value: port2name)
 
-    log.debug "Label3: ${port3name}"
+    //log.debug "Label3: ${port3name}"
     sendEvent(name: "Label3", value: port3name)
 
-    log.debug "Label4: ${port4name}"
+    //log.debug "Label4: ${port4name}"
     sendEvent(name: "Label4", value: port4name)
 
-    log.debug "Label5: ${port5name}"
+    //log.debug "Label5: ${port5name}"
     sendEvent(name: "Label5", value: port5name)
 
-    log.debug "Label6: ${port6name}"
+    //log.debug "Label6: ${port6name}"
     sendEvent(name: "Label6", value: port6name)
 
-    log.debug "Label7: ${port7name}"
+    //log.debug "Label7: ${port7name}"
     sendEvent(name: "Label7", value: port7name)
 
-    log.debug "Label8: ${port8name}"
+    //log.debug "Label8: ${port8name}"
     sendEvent(name: "Label8", value: port8name)
   
 }
@@ -217,7 +308,7 @@ def refresh() {
     getRemoteData()
 }
 
-//COVERING METHODS SINCE TILE ACTIONS CANN NOT PASS PARAMETERS
+
 def OA1ON() {OutletAction(1,"ON")}
 def OA1OFF(){OutletAction(1,"OFF")}
 def OA1CCL(){OutletAction(1,"CCL")}
@@ -250,11 +341,93 @@ def OA8ON() {OutletAction(8,"ON")}
 def OA8OFF(){OutletAction(8,"OFF")}
 def OA8CCL(){OutletAction(8,"CCL")}
 
+
+def OutletStatus(outlet){
+	//getRemoteData()
+    
+    def int o = outlet.toInteger()
+    
+	log.debug "Get Outlet ${o} Status"
+	def outletStatus 
+    switch(o)	{
+                    case 1:
+                    	outletStatus = device.latestValue('Outlet1');
+                        break;
+                    case 2:
+                    	outletStatus = device.latestValue('Outlet2');
+                        break;
+                    case 3:
+                    	outletStatus = device.latestValue('Outlet3');
+                        break;
+                    case 4:
+                    	outletStatus = device.latestValue('Outlet4');
+                        break;
+                    case 5:
+                    	outletStatus = device.latestValue('Outlet5');
+                        break;
+                    case 6:
+                    	outletStatus = device.latestValue('Outlet6');
+                        break;
+                    case 7:
+                    	outletStatus = device.latestValue('Outlet7');
+                        break;
+                    case 8:
+                    	outletStatus = device.latestValue('Outlet8');
+                        break;
+                    default:
+                        outletStatus = "Invalid Outlet Number: ${o}"
+                    }
+
+	log.debug "Outlet Status: ${outletStatus}"
+	return outletStatus;
+	}
+    
+def OutletName(outlet){
+	def int o = outlet.toInteger()
+
+	log.debug "Get Outlet ${o} Name"
+	def outletName 
+    switch(o)	{
+                    case 1:
+                    	outletName = port1name
+                        break;
+                    case 2:
+                    	outletName = port2name
+                        break;
+                    case 3:
+                    	outletName = port3name
+                        break;
+                    case 4:
+                    	outletName = port4name
+                        break;
+                    case 5:
+                    	outletName = port5name
+                        break;
+                    case 6:
+                    	outletName = port6name
+                        break;
+                    case 7:
+                    	outletName = port7name
+                        break;
+                    case 8:
+                    	outletName = port8name
+                        break;
+                    default:
+                        outletName = "Invalid Outlet Number: ${o}"
+                    }
+
+	log.debug "Outlet Name: ${outletName}"
+	return outletName;
+	}
+
 def OutletAction(outlet,action){
 	log.debug "Send Outlet ${outlet.toInteger().toString()} ${action}"
     def uri = "/outlet?${outlet.toInteger().toString()}=${action}"
-    log.debug uri
-    postAction(uri)
+    log.debug "URI: ${uri}"
+    delayBetween([
+    				postAction(uri),
+    				getRemoteData()
+                 ], 5000);
 	}
 
 private getRemoteData() {
@@ -279,7 +452,7 @@ private postAction(uri){
     headers: headers
   )
   log.debug("Executing hubAction on " + getHostAddress())
-  log.debug hubAction
+  //log.debug hubAction
   hubAction    
 }
 
@@ -351,4 +524,23 @@ private String convertIPtoHex(ipAddress) {
 private String convertPortToHex(port) {
 	String hexport = port.toString().format( '%04x', port.toInteger() )
     return hexport
+}
+
+private String hexToBin(String hex){
+    String bin = "";
+    String binFragment = "";
+    int iHex;
+    hex = hex.trim();
+    hex = hex.replaceFirst("0x", "");
+
+    for(int i = 0; i < hex.length(); i++){
+        iHex = Integer.parseInt(""+hex.charAt(i),16);
+        binFragment = Integer.toBinaryString(iHex);
+
+        while(binFragment.length() < 4){
+            binFragment = "0" + binFragment;
+        }
+        bin += binFragment;
+    }
+    return bin;
 }
